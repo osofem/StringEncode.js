@@ -116,3 +116,49 @@ String.prototype.fromAscii85 = function()
 	}
 	return txt;
 }
+
+String.prototype.toBase64 = function()
+{
+	var __codeString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	var encodeToBinary = function(n)
+	{
+		let bin = n.charCodeAt(0);
+		bin = bin.toString(2);
+		for(let i = bin.length; i < 8; i++)//Padd to 8 figures
+		{
+			bin = "0" + bin;
+		}
+		return bin;
+	}
+
+	let txt = [...this];
+	let bin = "";
+	for(let i = 0; i < txt.length; i++)
+	{
+		bin += encodeToBinary(txt[i]);
+	}
+	
+	let padding = (24-(bin.length%24)); if(padding%24 == 0) padding = 0;
+	for(let counter = 0; padding > 0 && counter < padding; counter++)
+	{
+		bin += "0";
+	}
+	
+	let chunk = [];
+	for(let i = 24; i <= bin.length; i += 24)
+	{
+		chunk.push(bin.slice(i-24, i));
+	}
+	
+	let BASE64 = ""; 
+	for(let i = 0; i < chunk.length; i++)
+	{
+		let w1 = (chunk[i].slice(0, 6) == "000000")?"=":__codeString[parseInt(chunk[i].slice(0, 6), 2)];
+		let w2 = (chunk[i].slice(6, 12) == "000000")?"=":__codeString[parseInt(chunk[i].slice(6, 12), 2)];
+		let w3 = (chunk[i].slice(12, 18) == "000000")?"=":__codeString[parseInt(chunk[i].slice(12, 18), 2)];
+		let w4 = (chunk[i].slice(18, 24) == "000000")?"=":__codeString[parseInt(chunk[i].slice(18, 24), 2)];
+		let sub = w1+w2+w3+w4;
+		BASE64 += sub;
+	}
+	return BASE64;
+}
