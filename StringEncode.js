@@ -1,5 +1,15 @@
+/**
+ * Encodes string into Base85.
+ * @param {String} - The data to be encoded. This is passed to the function via the "this" keyword
+ * @returns {String} The Base85 encoded data as string.
+ */
 String.prototype.toAscii85 = function()
 {
+	/**
+ 	* Turns a single character (it ASCII code) to binary padded to 8 figures when necessary.
+ 	* @param {String} n - The single character whose ASCII code is to be converted to binary
+ 	* @returns {String} The binary of the ASCII code of n padded to 8 figures when necessary.
+ 	*/
 	var encodeToBinary = function(n)
 	{
 		let bin = n.charCodeAt(0);
@@ -16,20 +26,29 @@ String.prototype.toAscii85 = function()
 	{
 		bin += encodeToBinary(txt[i]);
 	}
-
+	
+	/* Pad the binary so it length is exactly divisible by 32 
+	 * because we are going to divide it into chucks of 32's 
+	 * We pad with "0"
+	*/
 	let padding = (32-(bin.length%32)); 
-	if(padding%32 == 0) padding = 0;
+	if(padding%32 == 0) padding = 0; //If length is exactly divisible by 32 padding returns 32, so we reset it to 0
 	for(let counter = 0; padding > 0 && counter < padding; counter++)
 	{
 		bin += "0";
 	}
 	
+	//Divide whole binary to chunk of 32 characters
 	let chunk = [];
-	for(let i = 32; i <= bin.length; i += 32)//Divide whole binary to chunk of 32 figures
+	for(let i = 32; i <= bin.length; i += 32)
 	{
 		chunk.push(bin.slice(i-32, i));
 	}
 	
+	/* Each chunk should be converted from binary to base 10
+	 * The value should then be splitted into five integers
+	 * chunk value (in base 10) = (int1*85^4) + (int2*85^3) + (int3*85^2) + (int4*85^1) + int5
+	*/
 	var ASCII = ""; 
 	for(let i = 0; i < chunk.length; i++)
 	{
@@ -40,21 +59,22 @@ String.prototype.toAscii85 = function()
 		let w4 = Math.floor((sub-(w1*Math.pow(85, 4))-(w2*Math.pow(85, 3))-(w3*Math.pow(85, 2)))/Math.pow(85, 1));
 		let w5 = sub-(w1*Math.pow(85, 4))-(w2*Math.pow(85, 3))-(w3*Math.pow(85, 2))-(w4*Math.pow(85, 1));
 		
-		//For first char
+		//33 is added to each integer and convert to it corresponding ASCII character
 		let sub1 = String.fromCharCode(w1+33);
-		//Second char
 		let sub2 = String.fromCharCode(w2+33);
-		//Third char
 		let sub3 = String.fromCharCode(w3+33);
-		//Fourth char
 		let sub4 = String.fromCharCode(w4+33);
-		//Fiveth char
 		let sub5 = String.fromCharCode(w5+33);
 		sub = sub1 + sub2 + sub3 + sub4 + sub5;
+		
+		//If chunk is just bunch of 0's just represent it with z
 		if(sub == "!!!!!")
 			sub = "z";
+			
 		ASCII += sub;
 	}
+	
+	//Remove (padding/8) numbers of character from the final encoded characters
 	for(let i = 0; (padding/8) != 0 && i < (padding/8); i++)
 	{
 		if(ASCII == "z")
@@ -64,6 +84,11 @@ String.prototype.toAscii85 = function()
 	return "<~" + ASCII + "~>";
 }
 
+/**
+ * Decodes Base85 encoded data into it original string.
+ * @param {String} - The data to be decoded. This is passed to the function via the "this" keyword
+ * @returns {String} The original decoded string.
+ */
 String.prototype.fromAscii85 = function()
 {
 	//Remove white space and new lines
@@ -73,20 +98,33 @@ String.prototype.fromAscii85 = function()
 	//Replace all "z" with "!!!!!"
 	code = code.replace(/z/g,"!!!!!");
 	
+	/* Pad the data so it length is exactly divisible by 5 
+	 * because we are going to divide it into chucks of 5's 
+	 * We pad with "u"
+	*/
 	let padding = 5 - (code.length%5); 
-	if(padding%5 == 0) padding = 0;
+	if(padding%5 == 0) padding = 0; //If length is exactly divisible by 5 padding returns 5, so we reset it to 0
 	for(let i = 0; i < padding; i++)
 	{
 		code += "u";
 	}
 	
-	//Take chunk of 5 characters
+	//Divide padded data to chunk of 5 characters
 	let chunk = [];
 	for(let i = 5; i <= code.length; i += 5)
 	{
 		chunk.push(code.slice(i-5, i));
 	}
 	
+	/*
+	* Take each character in a chunk
+	* Convert it to it ASCII code and subtract 33 from it
+	* Raise it to the corresponding power of 85
+	* And add the integers together
+	* Convert it base 2 and pad it to 32 characters when necessary
+	* Slice the 32 characters into 8 characters in 4 places
+	* Convert each slice to base 10 and to the corresponding character of ASCII
+	*/
 	let txt = "";
 	for(let i = 0; i < chunk.length; i++)
 	{
@@ -109,7 +147,7 @@ String.prototype.fromAscii85 = function()
 		txt += w1+w2+w3+w4;
 	}
 	
-	//Remove padded strings
+	//Remove the number of padding added above from the strings
 	for(let i = 0; i < padding; i++)
 	{
 		txt = txt.substr(0, txt.length-1);
