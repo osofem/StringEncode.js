@@ -1,6 +1,6 @@
 /**
  * Encodes string into Base85.
- * @param {String} - The data to be encoded. This is passed to the function via the "this" keyword
+ * @input {String} - The data to be encoded. This is passed to the function via the "this" keyword
  * @returns {String} The Base85 encoded data as string.
  */
 String.prototype.toAscii85 = function()
@@ -14,7 +14,7 @@ String.prototype.toAscii85 = function()
 	{
 		let bin = n.charCodeAt(0);
 		bin = bin.toString(2);
-		for(let i = bin.length; i < 8; i++)//Pad to 8 figures with "0"
+		for(let i = bin.length; i < 8; i++)//Pad to 8 characters with "0"
 		{
 			bin = "0" + bin;
 		}
@@ -86,8 +86,8 @@ String.prototype.toAscii85 = function()
 
 /**
  * Decodes Base85 encoded data into it original string.
- * @param {String} - The data to be decoded. This is passed to the function via the "this" keyword
- * @returns {String} The original decoded string.
+ * @input {String} - The data to be decoded. This is passed to the function via the "this" keyword
+ * @returns {String} The original decoded string from Base85.
  */
 String.prototype.fromAscii85 = function()
 {
@@ -155,14 +155,26 @@ String.prototype.fromAscii85 = function()
 	return txt;
 }
 
+/**
+ * Encodes string to Base64.
+ * *****NOTICE the inbuilt btoa() can do this, this is just to understand what's going on under the hood******
+ * @input {String} - The string to be encoded. This is passed to the function via the "this" keyword
+ * @returns {String} The Base64 encoded data as string
+ */
 String.prototype.toBase64 = function()
 {
 	var __codeString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	
+	/**
+ 	* Turns a single character (it ASCII code) to binary padded to 8 figures when necessary.
+ 	* @param {String} n - The single character whose ASCII code is to be converted to binary
+ 	* @returns {String} The binary of the ASCII code of n padded to 8 figures when necessary.
+ 	*/
 	var encodeToBinary = function(n)
 	{
 		let bin = n.charCodeAt(0);
 		bin = bin.toString(2);
-		for(let i = bin.length; i < 8; i++)//Padd to 8 figures
+		for(let i = bin.length; i < 8; i++)//Padd to 8 characters
 		{
 			bin = "0" + bin;
 		}
@@ -176,18 +188,30 @@ String.prototype.toBase64 = function()
 		bin += encodeToBinary(txt[i]);
 	}
 	
-	let padding = (24-(bin.length%24)); if(padding%24 == 0) padding = 0;
+	/* Pad the data so it length is exactly divisible by 24 
+	 * because we are going to divide it into chucks of 24's 
+	 * We pad with "0"
+	*/
+	let padding = (24-(bin.length%24)); 
+	if(padding%24 == 0) padding = 0; //If length is exactly divisible by 24 padding returns 24, so we reset it to 0
 	for(let counter = 0; padding > 0 && counter < padding; counter++)
 	{
 		bin += "0";
 	}
 	
+	//Divide padded data to chunk of 24 characters
 	let chunk = [];
 	for(let i = 24; i <= bin.length; i += 24)
 	{
 		chunk.push(bin.slice(i-24, i));
 	}
 	
+	/*
+	* Slice the 24 characters in each chunk into 6 characters in 4 places
+	* If a 6 character chunk is "000000" encode it as "="
+	* Else convert the chunk to base10 and map it to our __codeString variable
+	* i.e. if the chunk in base10 is 0, it is encoded as "A" (__codeString[0])
+	*/
 	let BASE64 = ""; 
 	for(let i = 0; i < chunk.length; i++)
 	{
@@ -201,10 +225,20 @@ String.prototype.toBase64 = function()
 	return BASE64;
 }
 
+/**
+ * Decodes Base64 encoded data to it original string.
+ * *****NOTICE the inbuilt atob() can do this, this is just to understand what's going on under the hood******
+ * @input {String} - The string to be decoded. This is passed to the function via the "this" keyword
+ * @returns {String} The original decoded string form Base64
+ */
 String.prototype.fromBase64 = function()
 {
 	var __codeString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	let txt = [...this];
+	
+	/*Find the index of character inthe encoded data in our __codeString
+	* Convert it to binary and padd it to 6 chcracters when necessary
+	*/
 	let decode = "";
 	for(let i = 0; i < txt.length; i++)
 	{
@@ -216,12 +250,14 @@ String.prototype.fromBase64 = function()
 		decode += tx;
 	}
 	
+	//Break the whole binary into chunks of 8 characters
 	let chunk = [];
 	for(let i = 8; i <= decode.length; i += 8)
 	{
 		chunk.push(decode.slice(i-8, i));
 	}
 	
+	//Take each chunk of 8 characters and convert it to base10 and to the corresponding character of ASCII
 	let realText = ""; 
 	for(let i = 0; i < chunk.length; i++)
 	{
