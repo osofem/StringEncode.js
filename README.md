@@ -9,7 +9,7 @@ This library build on String.prototype to encode/decode strings to/from various 
 ### SUPPORTED BASES
 The currently supported bases are 
 1. ASCII85 (also known as Base85 and Z85)
-2. Base64
+2. Base64 (ofcourse btoa() and atob() can do that but you can see how it's done)
 
 ### HOWTO
 Example of how to use the library
@@ -36,5 +36,5 @@ Bases planned to be added in the future include
 2. Base58 (Integer?)
 3. Base36
 4. Base32
-5. Base16 (hexadecimal) though JS can do this readily
+5. Base16 (hexadecimal, JS can do this readily with toString()) 
 6. Base122
