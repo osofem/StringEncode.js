@@ -162,3 +162,34 @@ String.prototype.toBase64 = function()
 	}
 	return BASE64;
 }
+
+String.prototype.fromBase64 = function()
+{
+	var __codeString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	let txt = [...this];
+	let decode = "";
+	for(let i = 0; i < txt.length; i++)
+	{
+		let tx = ((__codeString.indexOf(txt[i])>0)?__codeString.indexOf(txt[i]):0).toString(2);
+		for(let j = tx.length; j < 6; j++)
+		{
+			tx = "0" + tx;
+		}
+		decode += tx;
+	}
+	
+	let chunk = [];
+	for(let i = 8; i <= decode.length; i += 8)
+	{
+		chunk.push(decode.slice(i-8, i));
+	}
+	
+	let realText = ""; 
+	for(let i = 0; i < chunk.length; i++)
+	{
+		if(parseInt(chunk[i],2) == 0)
+			continue;
+		realText += String.fromCharCode(parseInt(chunk[i],2));
+	}
+	return realText;
+}
