@@ -1,8 +1,8 @@
-# StringEncode.js #
+# StringEncode.js
 Encode and Decode string to various bases in JavaScript.
 
 
-### INTRODUCTION ###
+### INTRODUCTION
 This library build on String.prototype to encode/decode strings to/from various bases. <br />
 
 
@@ -15,7 +15,8 @@ The currently supported bases are
 Example of how to use the library
 
 
-    <script src="https://cdn.rawgit.com/osofem/StringEncode.js/master/StringEncode.js">
+    <script src="https://cdn.rawgit.com/osofem/StringEncode.js/master/StringEncode.js"></script>
+    <script>
     //Encoding to ASCII85
     document.writeln("Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.".toAscii85());
     
@@ -32,7 +33,7 @@ Example of how to use the library
 
 ### FUTURE EXTENSION
 Bases planned to be added in the future include
-1. 8BITMIME
+1. 8BITMIME (should I? obsolete)
 2. Base58 (Integer?)
 3. Base36
 4. Base32
