@@ -17,8 +17,7 @@ String.prototype.toAscii85 = function(){
 	}
 	let txt = [...this];
 	let bin = "";
-	for(let i = 0; i < txt.length; i++)
-		bin += encodeToBinary(txt[i]);
+	for(let i = 0; i < txt.length; i++) bin += encodeToBinary(txt[i]);
 	
 	/* Pad the binary so it length is exactly divisible by 32 
 	 * because we are going to divide it into chucks of 32's 
@@ -56,16 +55,14 @@ String.prototype.toAscii85 = function(){
 		sub = sub1 + sub2 + sub3 + sub4 + sub5;
 		
 		//If chunk is just bunch of 0's just represent it with z
-		if(sub == "!!!!!")
-			sub = "z";
+		if(sub == "!!!!!") sub = "z";
 			
 		ASCII += sub;
 	}
 	
 	//Remove (padding/8) numbers of character from the final encoded characters
 	for(let i = 0; (padding/8) != 0 && i < (padding/8); i++){
-		if(ASCII == "z")
-			ASCII = "!!!!!";
+		if(ASCII == "z") ASCII = "!!!!!";
 		ASCII = ASCII.substr(0, ASCII.length-1);
 	}
 	return "<~" + ASCII + "~>";
@@ -90,13 +87,11 @@ String.prototype.fromAscii85 = function(){
 	*/
 	let padding = 5 - (code.length%5); 
 	if(padding%5 == 0) padding = 0; //If length is exactly divisible by 5 padding returns 5, so we reset it to 0
-	for(let i = 0; i < padding; i++)
-		code += "u";
+	code += "u".repeat(padding);
 	
 	//Divide padded data to chunk of 5 characters
 	let chunk = [];
-	for(let i = 5; i <= code.length; i += 5)
-		chunk.push(code.slice(i-5, i));
+	for(let i = 5; i <= code.length; i += 5) chunk.push(code.slice(i-5, i));
 	
 	/*
 	* Take each character in a chunk
@@ -116,11 +111,8 @@ String.prototype.fromAscii85 = function(){
 		let w5 = ((chunk[i][4]).charCodeAt(0)-33);
 		let sub = w1+w2+w3+w4+w5;
 		sub = sub.toString(2);
+		sub = "0".repeat(32-sub.length)+sub;
 		
-		for(let v = sub.length; v < 32; v++)//Pad to 8 digits
-		{
-			sub = "0" + sub;
-		}
 		w1 = String.fromCharCode(parseInt(sub.slice(0, 8), 2));
 		w2 = String.fromCharCode(parseInt(sub.slice(8, 16), 2));
 		w3 = String.fromCharCode(parseInt(sub.slice(16, 24), 2));
@@ -129,8 +121,8 @@ String.prototype.fromAscii85 = function(){
 	}
 	
 	//Remove the number of padding added above from the strings
-	for(let i = 0; i < padding; i++)
-		txt = txt.substr(0, txt.length-1);
+	for(let i = 0; i < padding; i++) txt = txt.substr(0, txt.length-1);
+	
 	return txt;
 }
 
@@ -157,8 +149,7 @@ String.prototype.toBase64 = function(){
 
 	let txt = [...this];
 	let bin = "";
-	for(let i = 0; i < txt.length; i++)
-		bin += encodeToBinary(txt[i]);
+	for(let i = 0; i < txt.length; i++) bin += encodeToBinary(txt[i]);
 	
 	/* Pad the data so it length is exactly divisible by 24 
 	 * because we are going to divide it into chucks of 24's 
@@ -171,8 +162,7 @@ String.prototype.toBase64 = function(){
 	
 	//Divide padded data to chunk of 24 characters
 	let chunk = [];
-	for(let i = 24; i <= bin.length; i += 24)
-		chunk.push(bin.slice(i-24, i));
+	for(let i = 24; i <= bin.length; i += 24) chunk.push(bin.slice(i-24, i));
 	
 	/*
 	* Slice the 24 characters in each chunk into 6 characters in 4 places
@@ -206,8 +196,7 @@ String.prototype.fromBase64 = function(){
 	* Convert it to binary and padd it to 6 chcracters when necessary
 	*/
 	let decode = "";
-	for(let i = 0; i < txt.length; i++)
-	{
+	for(let i = 0; i < txt.length; i++){
 		let tx = ((__codeString.indexOf(txt[i])>0)?__codeString.indexOf(txt[i]):0).toString(2);
 		tx = "0".repeat(6-tx.length) + tx;
 		decode += tx;
@@ -215,14 +204,12 @@ String.prototype.fromBase64 = function(){
 	
 	//Break the whole binary into chunks of 8 characters
 	let chunk = [];
-	for(let i = 8; i <= decode.length; i += 8)
-		chunk.push(decode.slice(i-8, i));
+	for(let i = 8; i <= decode.length; i += 8) chunk.push(decode.slice(i-8, i));
 	
 	//Take each chunk of 8 characters and convert it to base10 and to the corresponding character of ASCII
 	let realText = ""; 
 	for(let i = 0; i < chunk.length; i++){
-		if(parseInt(chunk[i],2) == 0)
-			continue;
+		if(parseInt(chunk[i],2) == 0) continue;
 		realText += String.fromCharCode(parseInt(chunk[i],2));
 	}
 	return realText;
