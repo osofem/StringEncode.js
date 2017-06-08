@@ -1,0 +1,16 @@
+<html>
+	<!--Remember to change /v0.0-beta0.0/ to the version you are targeting -->
+	<xscript src="https://cdn.rawgit.com/osofem/StringEncode.js/v0.0-beta0.0/StringEncode.js"></xscript>
+	<script src="../../StringEncode.js"></script>
+	<script src="assert.js"></script>
+	<script>
+		var string = "Man is distinguished, not only by his reason, but by this singular passion from other animals, which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable generation of knowledge, exceeds the short vehemence of any carnal pleasure.";
+		assertEqual("moderate".toAscii85(), "<~D/WrrEaa\'$~>"); 
+		assertEqual("easy".toAscii85(), "<~ARTY*~>");
+		assertEqual("somewhat difficult".toAscii85(), "<~F)Po,GA(E,+Co1uAnbatCif~>");
+		assertEqual(string.toAscii85().fromAscii85(), string);
+		
+		assertEqual(string.toBase64(), btoa(string));
+		assertEqual(string.toBase64().fromBase64(), string);
+	</script>
+</html>
